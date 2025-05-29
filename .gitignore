@@ -1,0 +1,187 @@
+/.what-is-this.md
+
+# ===========================
+# 환경 변수 및 보안 관련 파일
+# ===========================
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
+
+# AWS 키 파일들
+*.pem
+*.ppk
+awsjmk.pem
+aws-credentials.json
+.aws/
+
+# 기타 보안 관련
+secrets/
+*.key
+*.crt
+*.p12
+*.jks
+
+# ===========================
+# Docker 관련
+# ===========================
+.docker/
+docker-compose.override.yml
+.dockerignore
+
+# ===========================
+# Node.js / Next.js (Frontend)
+# ===========================
+portfolio-frontend/node_modules/
+portfolio-frontend/.next/
+portfolio-frontend/.swc/
+portfolio-frontend/out/
+portfolio-frontend/build/
+portfolio-frontend/.nuxt/
+portfolio-frontend/dist/
+portfolio-frontend/.cache/
+portfolio-frontend/.vercel/
+
+# 의존성 관련
+portfolio-frontend/package-lock.json
+portfolio-frontend/yarn.lock
+portfolio-frontend/pnpm-lock.yaml
+
+# ===========================
+# Python / FastAPI (Backend)
+# ===========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# PyCharm
+.idea/
+
+# ===========================
+# 데이터베이스 관련
+# ===========================
+*.db
+*.sqlite
+*.sqlite3
+postgres_data/
+pgdata/
+redis_data/
+
+# 데이터베이스 백업
+*.sql.gz
+*.dump
+*.backup
+
+# ===========================
+# 로그 파일
+# ===========================
+*.log
+logs/
+*.out
+*.err
+
+# ===========================
+# OS 관련
+# ===========================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+
+# ===========================
+# IDE/에디터 관련
+# ===========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.classpath
+
+# ===========================
+# CI/CD 관련
+# ===========================
+.github/workflows/secrets.yml
+buildspec-secrets.yml
+deploy-config.json
+
+# Terraform (Infrastructure as Code)
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+
+# ===========================
+# 임시 파일
+# ===========================
+*.tmp
+*.temp
+*.cache
+.cache/
+.npm/
+.eslintcache
+
+# ===========================
+# 테스트 관련
+# ===========================
+coverage/
+.nyc_output/
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# ===========================
+# 배포 관련
+# ===========================
+.deploy/
+deploy/
+staging/
+production/
+
+# Docker 빌드 컨텍스트에서 제외할 대용량 파일
+*.zip
+*.tar
+*.tar.gz
+*.rar

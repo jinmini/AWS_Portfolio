@@ -1,0 +1,21 @@
+python -m uvicorn main:app --reload
+Invoke-RestMethod -Uri "http://localhost:8102/health" -Method Get
+
+
+docker ps
+docker ps -a
+docker images
+docker start backend
+docker start database
+docker-compose
+docker exec -it database  psql -U myuser -d mydb
+docker exec -it backend bash
+docker compose logs --tail=500 -f backend
+docker exec -it backend env | Select-String "DB_"
+docker-compose down --volumes
+docker-compose up --build -d
+docker-compose build --no-cache backend
+docker-compose up -d backend
+docker-compose down backend
+docker-compose build backend
+docker-compose up -d

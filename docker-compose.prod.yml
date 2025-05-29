@@ -1,0 +1,117 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: jinmini-postgres
+    environment:
+      POSTGRES_DB: jinmini_portfolio
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 9TjowjOA3nU8puxx
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - jinmini-network
+    restart: unless-stopped
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: jinmini-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - jinmini-network
+    restart: unless-stopped
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: jinmini-auth-service
+    ports:
+      - "8101:8101"
+    environment:
+      - DATABASE_URL=postgresql://admin:9TjowjOA3nU8puxx@postgres:5432/jinmini_portfolio
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
+      - JWT_ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - NODE_ENV=production
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - jinmini-network
+    restart: unless-stopped
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8101"]
+
+  # Blog Service
+  blog-service:
+    build:
+      context: ./blog-service
+      dockerfile: Dockerfile
+    container_name: jinmini-blog-service
+    ports:
+      - "8102:8102"
+    environment:
+      - DATABASE_URL=postgresql://admin:9TjowjOA3nU8puxx@postgres:5432/jinmini_portfolio
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
+      - NODE_ENV=production
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - jinmini-network
+    restart: unless-stopped
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8102"]
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: jinmini-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8101
+      - BLOG_SERVICE_URL=http://blog-service:8102
+      - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
+      - REDIS_URL=redis://redis:6379
+      - CORS_ORIGINS=https://your-domain.com,https://www.your-domain.com
+      - NODE_ENV=production
+    depends_on:
+      - auth-service
+      - blog-service
+      - redis
+    networks:
+      - jinmini-network
+    restart: unless-stopped
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+
+  # Portfolio Frontend
+  portfolio-frontend:
+    build: ./portfolio-frontend
+    container_name: jinmini-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=https://your-domain.com
+      - NODE_ENV=production
+    depends_on:
+      - api-gateway
+    networks:
+      - jinmini-network
+    restart: unless-stopped
+
+networks:
+  jinmini-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
