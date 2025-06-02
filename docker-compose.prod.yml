@@ -28,53 +28,41 @@ services:
 
   # Auth Service
   auth-service:
-    build:
-      context: ./auth-service
-      dockerfile: Dockerfile
+    image: jinmini/jinmini-auth-service:latest
     container_name: jinmini-auth-service
     ports:
       - "8101:8101"
     environment:
       - DATABASE_URL=postgresql://admin:9TjowjOA3nU8puxx@postgres:5432/jinmini_portfolio
-      - REDIS_URL=redis://redis:6379
       - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
-      - JWT_ALGORITHM=HS256
-      - ACCESS_TOKEN_EXPIRE_MINUTES=30
-      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - postgres
       - redis
     networks:
       - jinmini-network
     restart: unless-stopped
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8101"]
 
   # Blog Service
   blog-service:
-    build:
-      context: ./blog-service
-      dockerfile: Dockerfile
+    image: jinmini/jinmini-blog-service:latest
     container_name: jinmini-blog-service
     ports:
       - "8102:8102"
     environment:
       - DATABASE_URL=postgresql://admin:9TjowjOA3nU8puxx@postgres:5432/jinmini_portfolio
-      - REDIS_URL=redis://redis:6379
       - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
-      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - postgres
       - redis
     networks:
       - jinmini-network
     restart: unless-stopped
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8102"]
 
   # API Gateway
   api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
+    image: jinmini/jinmini-api-gateway:latest
     container_name: jinmini-api-gateway
     ports:
       - "8080:8080"
@@ -82,36 +70,32 @@ services:
       - AUTH_SERVICE_URL=http://auth-service:8101
       - BLOG_SERVICE_URL=http://blog-service:8102
       - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
-      - REDIS_URL=redis://redis:6379
-      - CORS_ORIGINS=https://your-domain.com,https://www.your-domain.com
-      - NODE_ENV=production
     depends_on:
       - auth-service
       - blog-service
-      - redis
     networks:
       - jinmini-network
     restart: unless-stopped
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
 
   # Portfolio Frontend
   portfolio-frontend:
-    build: ./portfolio-frontend
+    image: jinmini/jinmini-frontend:latest
     container_name: jinmini-frontend
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=https://your-domain.com
       - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://13.124.16.220:8080
+      - NEXT_TELEMETRY_DISABLED=1
     depends_on:
       - api-gateway
     networks:
       - jinmini-network
     restart: unless-stopped
 
+volumes:
+  postgres_data:
+
 networks:
   jinmini-network:
-    driver: bridge
-
-volumes:
-  postgres_data: 
+    driver: bridge 

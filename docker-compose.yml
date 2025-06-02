@@ -36,19 +36,14 @@ services:
       - "8101:8101"
     environment:
       - DATABASE_URL=postgresql://admin:9TjowjOA3nU8puxx@postgres:5432/jinmini_portfolio
-      - REDIS_URL=redis://redis:6379
       - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
-      - JWT_ALGORITHM=HS256
-      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - postgres
       - redis
     networks:
       - jinmini-network
     restart: unless-stopped
-    volumes:
-      - ./auth-service:/app
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8101", "--reload"]
 
   # Blog Service
   blog-service:
@@ -60,17 +55,14 @@ services:
       - "8102:8102"
     environment:
       - DATABASE_URL=postgresql://admin:9TjowjOA3nU8puxx@postgres:5432/jinmini_portfolio
-      - REDIS_URL=redis://redis:6379
       - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - postgres
       - redis
     networks:
       - jinmini-network
     restart: unless-stopped
-    volumes:
-      - ./blog-service:/app
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8102", "--reload"]
 
   # API Gateway
   api-gateway:
@@ -84,36 +76,34 @@ services:
       - AUTH_SERVICE_URL=http://auth-service:8101
       - BLOG_SERVICE_URL=http://blog-service:8102
       - JWT_SECRET_KEY=llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ
-      - REDIS_URL=redis://redis:6379
-      - CORS_ORIGINS=http://localhost:3000,http://portfolio-frontend:3000
     depends_on:
       - auth-service
       - blog-service
-      - redis
     networks:
       - jinmini-network
     restart: unless-stopped
-    volumes:
-      - ./api-gateway:/app
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
 
   # Portfolio Frontend
   portfolio-frontend:
-    build: ./portfolio-frontend
+    build:
+      context: ./portfolio-frontend
+      dockerfile: Dockerfile.simple
     container_name: jinmini-frontend
     ports:
       - "3000:3000"
     environment:
+      - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - NEXT_TELEMETRY_DISABLED=1
     depends_on:
       - api-gateway
     networks:
       - jinmini-network
     restart: unless-stopped
 
+volumes:
+  postgres_data:
+
 networks:
   jinmini-network:
     driver: bridge
-
-volumes:
-  postgres_data:
