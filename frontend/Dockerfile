@@ -3,22 +3,28 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# pnpm 설치
+RUN npm install -g pnpm
+
 # 의존성 파일 복사
-COPY package*.json ./
+COPY package*.json pnpm-lock.yaml ./
 
 # 의존성 설치
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 # 소스 코드 복사
 COPY . .
 
 # 빌드 실행
-RUN npm run build
+RUN pnpm run build
 
 # Stage 2: 프로덕션 런타임
 FROM node:18-alpine AS runner
 
 WORKDIR /app
+
+# pnpm 설치
+RUN npm install -g pnpm
 
 # 프로덕션용 사용자 생성
 RUN addgroup --system --gid 1001 nodejs
@@ -37,8 +43,8 @@ USER nextjs
 EXPOSE 3000
 
 # 환경 변수
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # 애플리케이션 시작
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]

@@ -5,7 +5,7 @@ import RootLayout from "@/components/layout/root-layout"
 import PostCard from "@/components/blog/post-card"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Filter } from "lucide-react"
-import { usePosts, useCategories } from "@/hooks/use-blog"
+import { usePosts, useCategories } from "@/hooks/use-blog-simple"
 import type { PostSummary } from "@/lib/blog-api"
 
 export default function BlogPage() {
@@ -15,13 +15,22 @@ export default function BlogPage() {
   
   const postsPerPage = 6
   
-  // API 호출
+  // 디버깅: 환경변수 확인
+  console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+  console.log('NODE_ENV:', process.env.NODE_ENV)
+  
+  // API 호출 (새로운 단순한 훅 사용)
   const { data: postsData, isLoading: postsLoading, error: postsError } = usePosts({
     page: currentPage,
     size: postsPerPage,
     category_id: selectedCategory,
     post_type: selectedPostType,
   })
+  
+  // 디버깅: API 응답 확인
+  console.log('postsData:', postsData)
+  console.log('postsLoading:', postsLoading)
+  console.log('postsError:', postsError)
   
   const { data: categories } = useCategories()
 

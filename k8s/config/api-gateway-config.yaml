@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-gateway-config
+  namespace: default
+data:
+  AUTH_SERVICE_URL: "http://auth-service:8101"
+  BLOG_SERVICE_URL: "http://blog-service:8102"
+  JWT_SECRET_KEY: "llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ"
+  CORS_ORIGINS: "http://localhost:3000,http://localhost:30000,http://frontend:3000" 

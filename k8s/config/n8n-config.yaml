@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-config
+  namespace: default
+data:
+  N8N_BASIC_AUTH_ACTIVE: "true"
+  N8N_BASIC_AUTH_USER: "admin"
+  N8N_BASIC_AUTH_PASSWORD: "n8n-admin-password"
+  N8N_ENCRYPTION_KEY: "n8n-encryption-key-for-jinmini-portfolio"
+  N8N_USER_MANAGEMENT_DISABLED: "true"
+  N8N_SECURE_COOKIE: "true"
+  N8N_HOST: "n8n.localhost"
+  N8N_PORT: "443"
+  N8N_PROTOCOL: "https"
+  N8N_EDITOR_BASE_URL: "https://n8n.localhost"
+  DB_TYPE: "sqlite"
+  N8N_LOG_LEVEL: "info"
+  WEBHOOK_URL: "https://n8n.localhost"
+  N8N_FORCE_SSL: "true" 

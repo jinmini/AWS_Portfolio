@@ -9,7 +9,7 @@ import LevelSwitcher, { type LevelType } from "@/components/blog/level-switcher"
 import { CodeBlock } from "@/components/ui/code-block"
 import RelatedPosts from "@/components/blog/related-posts"
 import { formatDate } from "@/lib/utils"
-import { usePost, usePosts } from "@/hooks/use-blog"
+import { usePost, usePosts } from "@/hooks/use-blog-simple"
 import { Button } from "@/components/ui/button"
 
 // 예시 블로그 포스트 데이터

@@ -67,7 +67,7 @@ services:
   # API Gateway
   api-gateway:
     build:
-      context: ./api-gateway
+      context: ./gateway
       dockerfile: Dockerfile
     container_name: jinmini-api-gateway
     ports:
@@ -84,11 +84,11 @@ services:
     restart: unless-stopped
 
   # Portfolio Frontend
-  portfolio-frontend:
+  frontend:
     build:
-      context: ./portfolio-frontend
+      context: ./frontend
       dockerfile: Dockerfile.simple
-    container_name: jinmini-frontend
+    container_name: frontend
     ports:
       - "3000:3000"
     environment:

@@ -1,6 +1,6 @@
 'use client';
 
-import { useHealthCheck, useSystemStatus, useCategories, usePosts } from '@/hooks/use-blog';
+import { useHealthCheck, useSystemStatus, useCategories, usePosts } from '@/hooks/use-blog-simple';
 import { useState } from 'react';
 
 export default function TestPage() {

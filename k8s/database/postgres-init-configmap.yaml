@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-db
+  namespace: default
+data:
+  init-db.sql: |
+    -- 데이터베이스 생성 (이미 존재함)
+    \c jinmini_portfolio;
+
+    -- 사용자 테이블 생성
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        hashed_password VARCHAR(255) NOT NULL,
+        full_name VARCHAR(255),
+        is_active BOOLEAN DEFAULT true,
+        is_superuser BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 카테고리 테이블 생성
+    CREATE TABLE IF NOT EXISTS categories (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) UNIQUE NOT NULL,
+        description TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 포스트 테이블 생성
+    CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
+        summary TEXT,
+        slug VARCHAR(255) UNIQUE NOT NULL,
+        category_id INTEGER REFERENCES categories(id),
+        author_id INTEGER REFERENCES users(id),
+        is_published BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 기본 사용자 생성
+    INSERT INTO users (email, hashed_password, full_name, is_superuser) 
+    VALUES ('admin@jinmini.dev', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3VZpWmJOd6', 'Admin User', true)
+    ON CONFLICT (email) DO NOTHING;
+
+    -- 카테고리 초기 데이터
+    INSERT INTO categories (name, description) VALUES
+        ('프로그래밍', '프로그래밍 관련 포스트'),
+        ('웹 개발', '웹 개발 기술과 프레임워크'),
+        ('데이터베이스', '데이터베이스 설계와 관리'),
+        ('DevOps', '개발 운영 및 인프라'),
+        ('AI/ML', '인공지능과 머신러닝'),
+        ('일반', '기타 일반적인 주제')
+    ON CONFLICT (name) DO NOTHING;
+
+    -- 샘플 포스트 데이터
+    INSERT INTO posts (title, content, summary, slug, category_id, author_id, is_published) VALUES
+        (
+            'FastAPI로 마이크로서비스 구축하기',
+            '이 포스트에서는 FastAPI를 사용하여 마이크로서비스 아키텍처를 구축하는 방법을 설명합니다...',
+            'FastAPI를 사용한 마이크로서비스 아키텍처 구축 가이드',
+            'fastapi-microservice-guide',
+            2,
+            1,
+            true
+        ),
+        (
+            'Kubernetes와 Docker를 활용한 컨테이너 오케스트레이션',
+            'Kubernetes와 Docker를 사용하여 컨테이너 기반 애플리케이션을 효율적으로 관리하는 방법...',
+            'Kubernetes와 Docker를 활용한 컨테이너 관리 전략',
+            'kubernetes-docker-orchestration',
+            4,
+            1,
+            true
+        )
+    ON CONFLICT (slug) DO NOTHING;
+
+    -- 인덱스 생성
+    CREATE INDEX IF NOT EXISTS idx_posts_category_id ON posts(category_id);
+    CREATE INDEX IF NOT EXISTS idx_posts_author_id ON posts(author_id);
+    CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(is_published);
+    CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at); 

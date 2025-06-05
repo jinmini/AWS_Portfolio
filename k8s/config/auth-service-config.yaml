@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+  namespace: default
+data:
+  DATABASE_URL: "postgresql://admin:9TjowjOA3nU8puxx@postgres:5432/jinmini_portfolio"
+  JWT_SECRET_KEY: "llbqJVRzOA4dFZ7m7PAzn-CnRgzuG65BxvzOtfbujSQ"
+  REDIS_URL: "redis://redis:6379" 
